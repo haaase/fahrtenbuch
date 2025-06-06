@@ -13,7 +13,6 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "@material-design-icons/font": "^0.14.15",
     "@mdi/font": "^7.4.47",
     "bulma": "^1.0.4"
   }
