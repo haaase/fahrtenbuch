@@ -20,10 +20,27 @@ def Fahrtenbuch(): Unit =
 
 object Main {
 
-  val entries = List(
-    Entry(100.0, 200.0, new Date(), "🐷", true, "Gesine"),
-    Entry(200.0, 300.0, new Date(), "Dog", false, "Bob")
+  val entries = Var(
+    List(
+      Entry("0", 100.0, 200.0, new Date(), "🐷", true, "Gesine"),
+      Entry("1", 200.0, 300.0, new Date(), "Dog", false, "Bob")
+    )
   )
+  val entriesSignal = entries.signal
+
+  val editState = Var(Map.empty[Id, Boolean])
+  val editStateSignal = editState.signal
+
+  val entryComponents: Signal[List[EntryComponent]] =
+    entriesSignal
+      .combineWith(editStateSignal)
+      .map { case (entries, editState) =>
+        entries.map(entry =>
+          EntryComponent(entry, editState.getOrElse(entry.id, false))
+        )
+      }
+
+  val editClickBus = new EventBus[(Id, Boolean)]
 
   def appElement(): HtmlElement =
     div(
@@ -40,21 +57,29 @@ object Main {
             th("Tier"),
             th("Abnutzung"),
             th("Gesamtkosten"),
-            th("Bezahlt")
+            th("Bezahlt"),
+            th()
           )
         ),
         tbody(
-          entries.map(entry =>
-            tr(
-              td(entry.date.toDateString()),
-              td(entry.driver),
-              td(entry.startKm),
-              td(entry.endKm),
-              td(entry.animal),
-              td(entry.costWear),
-              td(entry.costTotal),
-              td(entry.paid),
-              td(span(cls := "icon", i(cls := "mdi mdi-pencil-box")))
+          children <-- entryComponents.map(_.map(_.render))
+        ),
+        tr(
+          td(input(cls := "input")),
+          td(input(cls := "input")),
+          td(input(cls := "input")),
+          td(input(cls := "input")),
+          td(input(cls := "input")),
+          td(input(cls := "input")),
+          td(input(cls := "input")),
+          td(input(cls := "input")),
+          td(
+            button(
+              cls := "button is-success",
+              span(
+                cls := "icon edit",
+                i(cls := "mdi mdi-18px mdi-check-bold")
+              )
             )
           )
         )
