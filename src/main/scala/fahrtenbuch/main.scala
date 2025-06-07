@@ -4,7 +4,9 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.*
 import org.scalajs.dom
 import com.raquo.laminar.api.L.{*, given}
+import com.raquo.laminar.api.features.unitArrows
 import scala.scalajs.js.Date
+import rdts.base.Uid
 
 // import javascriptLogo from "/javascript.svg"
 //@js.native @JSImport("/javascript.svg", JSImport.Default)
@@ -20,27 +22,75 @@ def Fahrtenbuch(): Unit =
 
 object Main {
 
-  val entries = Var(
-    List(
-      Entry("0", 100.0, 200.0, new Date(), "🐷", true, "Gesine"),
-      Entry("1", 200.0, 300.0, new Date(), "Dog", false, "Bob")
-    )
-  )
-  val entriesSignal = entries.signal
+  // tracks whenever a user clicks on an edit button
+  val editClickBus = new EventBus[(Uid, Boolean)]
+  val editStateSignal: Signal[Map[Uid, Boolean]] =
+    editClickBus.stream.foldLeft(Map.empty[Uid, Boolean]) {
+      case (acc, (id, value)) =>
+        acc + (id -> value)
+    }
 
-  val editState = Var(Map.empty[Id, Boolean])
-  val editStateSignal = editState.signal
+  // track changes to entries
+  val entryEditBus = new EventBus[Entry]
+  val allEntries = entryEditBus.stream.foldLeft(Map.empty[Uid, Entry]) {
+    case (acc, entry) =>
+      acc + (entry.id -> entry)
+  }
 
   val entryComponents: Signal[List[EntryComponent]] =
-    entriesSignal
+    allEntries
       .combineWith(editStateSignal)
       .map { case (entries, editState) =>
-        entries.map(entry =>
-          EntryComponent(entry, editState.getOrElse(entry.id, false))
-        )
+        entries.values.toList
+          .sortBy(_.id)
+          .map(entry =>
+            EntryComponent(entry, editState.getOrElse(entry.id, false))
+          )
       }
 
-  val editClickBus = new EventBus[(Id, Boolean)]
+  val showNewEntryField = Var(false)
+
+  val newEntryInput =
+    val newEntryDriver = input(cls := "input")
+    val newEntryStartKm = input(cls := "input")
+    val newEntryEndKm = input(cls := "input")
+    val newEntryAnimal = input(cls := "input")
+    val newEntryPaid = input(`type` := "checkbox")
+    tr(
+      td(newEntryDriver),
+      td(newEntryStartKm),
+      td(newEntryEndKm),
+      td(newEntryAnimal),
+      td(),
+      td(),
+      td(newEntryPaid),
+      td(
+        button(
+          cls := "button is-success",
+          onClick --> {
+            val id = Uid.gen()
+            val driver = newEntryDriver.ref.value
+            val startKm = newEntryStartKm.ref.value.toDouble
+            val endKm = newEntryEndKm.ref.value.toDouble
+            val animal = newEntryAnimal.ref.value
+            val paid = newEntryPaid.ref.checked
+            entryEditBus.emit(
+              Entry(id, startKm, endKm, animal, paid, driver)
+            )
+            showNewEntryField.set(false)
+            newEntryDriver.ref.value = ""
+            newEntryStartKm.ref.value = ""
+            newEntryEndKm.ref.value = ""
+            newEntryAnimal.ref.value = ""
+            newEntryPaid.ref.checked = false
+          },
+          span(
+            cls := "icon edit",
+            i(cls := "mdi mdi-18px mdi-check-bold")
+          )
+        )
+      )
+    )
 
   def appElement(): HtmlElement =
     div(
@@ -50,7 +100,7 @@ object Main {
         cls := "table",
         thead(
           tr(
-            th("Date"),
+//            th("Date"),
             th("Fahrer*in"),
             th("Start Km"),
             th("Ende Km"),
@@ -62,28 +112,16 @@ object Main {
           )
         ),
         tbody(
-          children <-- entryComponents.map(_.map(_.render))
-        ),
-        tr(
-          td(input(cls := "input")),
-          td(input(cls := "input")),
-          td(input(cls := "input")),
-          td(input(cls := "input")),
-          td(input(cls := "input")),
-          td(input(cls := "input")),
-          td(input(cls := "input")),
-          td(input(cls := "input")),
-          td(
-            button(
-              cls := "button is-success",
-              span(
-                cls := "icon edit",
-                i(cls := "mdi mdi-18px mdi-check-bold")
-              )
-            )
-          )
+          children <-- entryComponents.map(_.map(_.render)),
+          child(newEntryInput) <-- showNewEntryField
         )
       ),
-      button(cls := "button is-primary", "Eintrag hinzufügen")
+      button(
+        cls := "button is-primary",
+        onClick --> { _ =>
+          showNewEntryField.set(true)
+        },
+        "Eintrag hinzufügen"
+      )
     )
 }

@@ -1,6 +1,7 @@
 import org.scalajs.linker.interface.ModuleSplitStyle
 
-lazy val fahrtenbuch = project.in(file("."))
+lazy val fahrtenbuch = project
+  .in(file("."))
   .enablePlugins(ScalaJSPlugin) // Enable the Scala.js plugin in this project
   .settings(
     scalaVersion := "3.7.1",
@@ -18,12 +19,14 @@ lazy val fahrtenbuch = project.in(file("."))
     scalaJSLinkerConfig ~= {
       _.withModuleKind(ModuleKind.ESModule)
         .withModuleSplitStyle(
-          ModuleSplitStyle.SmallModulesFor(List("fahrtenbuch")))
+          ModuleSplitStyle.SmallModulesFor(List("fahrtenbuch"))
+        )
     },
 
     /* Depend on the scalajs-dom library.
      * It provides static types for the browser DOM APIs.
      */
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.0",
-    libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1"
+    libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1",
+    libraryDependencies += "de.tu-darmstadt.stg" %%% "rdts" % "0.37.0"
   )
