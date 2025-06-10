@@ -5,5 +5,8 @@ WORKDIR /app
 RUN npm install
 RUN npm run build
 
-COPY docker/lighttp.conf /app/lighttp.conf
-CMD ["lighttpd", "-D", "-f", "/app/lighttp.conf"]
+COPY docker/lighttpd.conf /app/lighttpd.conf
+RUN mkdir -p /var/www
+RUN mv dist/* /var/www
+RUN lighttpd -tt -f lighttpd.conf
+CMD ["lighttpd", "-D", "-f", "/app/lighttpd.conf"]
