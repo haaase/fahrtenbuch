@@ -32,10 +32,20 @@ object Main {
 
   // track changes to entries
   val entryEditBus = new EventBus[Entry]
+  val entryObserver =
+    Observer[Entry](onNext = DexieDB.insertEntry(_))
+  val entryPrinter =
+    Observer[Entry](onNext = entry => println(entry))
+//  entryEditBus --> entryObserver
+//  entryEditBus --> entryPrinter
+  entryEditBus.stream.tapEach(_ => println("lalilu"))
+  println("test")
+
   val allEntries = entryEditBus.stream.foldLeft(Map.empty[Uid, Entry]) {
     case (acc, entry) =>
       acc + (entry.id -> entry)
   }
+  entryEditBus.stream.addObserver(entryObserver)(using unsafeWindowOwner)
 
   val entryComponents: Signal[List[EntryComponent]] =
     allEntries

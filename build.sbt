@@ -2,12 +2,26 @@ import org.scalajs.linker.interface.ModuleSplitStyle
 
 lazy val fahrtenbuch = project
   .in(file("."))
-  .enablePlugins(ScalaJSPlugin) // Enable the Scala.js plugin in this project
+  .enablePlugins(
+    ScalaJSPlugin,
+    ScalablyTypedConverterExternalNpmPlugin
+  )
   .settings(
     scalaVersion := "3.7.1",
 
     // Tell Scala.js that this is an application with a main method
     scalaJSUseMainModuleInitializer := true,
+
+    // scalably typed config
+    // Ignore several Trystero dependencies in ScalablyTyped to avoid `stImport` errors
+    stIgnore := List(
+      "libp2p",
+      "firebase",
+      "@supabase/supabase-js",
+      "@mdi/font",
+      "bulma"
+    ),
+    externalNpm := baseDirectory.value,
 
     /* Configure Scala.js to emit modules in the optimal way to
      * connect to Vite's incremental reload.
@@ -28,5 +42,6 @@ lazy val fahrtenbuch = project
      */
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.0",
     libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1",
-    libraryDependencies += "de.tu-darmstadt.stg" %%% "rdts" % "0.37.0"
+    libraryDependencies += "de.tu-darmstadt.stg" %%% "rdts" % "0.37.0",
+    libraryDependencies += "org.getshaka" %%% "native-converter" % "0.9.0"
   )
