@@ -7,6 +7,10 @@ import com.raquo.laminar.api.L.{*, given}
 import com.raquo.laminar.api.features.unitArrows
 import scala.scalajs.js.Date
 import rdts.base.Uid
+import fahrtenbuch.DexieDB.entriesObservable
+import scala.util.Failure
+import scala.util.Success
+import scala.concurrent.ExecutionContext.Implicits.global
 
 // import javascriptLogo from "/javascript.svg"
 //@js.native @JSImport("/javascript.svg", JSImport.Default)
@@ -41,17 +45,25 @@ object Main {
   entryEditBus.stream.tapEach(_ => println("lalilu"))
   println("test")
 
-  val allEntries = entryEditBus.stream.foldLeft(Map.empty[Uid, Entry]) {
-    case (acc, entry) =>
-      acc + (entry.id -> entry)
-  }
+  val allEntriesVar = Var(Set.empty[Entry])
+  entriesObservable.subscribe(entries =>
+    entries.onComplete {
+      case Failure(exception) => println("failed to get entries from db")
+      case Success(value)     => allEntriesVar.set(value.toSet)
+    }
+  )
+  val allEntries = allEntriesVar.signal
+//  val allEntries = entryEditBus.stream.foldLeft(Map.empty[Uid, Entry]) {
+//    case (acc, entry) =>
+//      acc + (entry.id -> entry)
+//  }
   entryEditBus.stream.addObserver(entryObserver)(using unsafeWindowOwner)
 
   val entryComponents: Signal[List[EntryComponent]] =
     allEntries
       .combineWith(editStateSignal)
       .map { case (entries, editState) =>
-        entries.values.toList
+        entries.toList
           .sortBy(_.id)
           .map(entry =>
             EntryComponent(entry, editState.getOrElse(entry.id, false))
