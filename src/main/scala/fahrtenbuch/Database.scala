@@ -8,6 +8,8 @@ import scala.scalajs.js
 import org.getshaka.nativeconverter.NativeConverter
 import scala.concurrent.ExecutionContext.Implicits.global
 import typings.dexie.mod.Observable
+import com.raquo.airstream.core.Signal
+import com.raquo.airstream.core.EventStream
 
 object DexieDB {
 
