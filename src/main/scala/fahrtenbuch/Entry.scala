@@ -9,7 +9,6 @@ import com.raquo.laminar.nodes.ReactiveHtmlElement
 import scala.annotation.threadUnsafe
 import fahrtenbuch.Main.entryEditBus
 import org.getshaka.nativeconverter.NativeConverter
-import fahrtenbuch.Main.entryPrinter
 import org.getshaka.nativeconverter.ParseState
 import scala.scalajs.js
 
