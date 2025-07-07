@@ -1,8 +1,8 @@
 package fahrtenbuch.components
-import fahrtenbuch.Entry
+import fahrtenbuch.model.Entry
 import com.raquo.laminar.nodes.ReactiveHtmlElement
 import org.scalajs.dom.HTMLTableRowElement
-import com.raquo.laminar.api.L.{*, given}
+import com.raquo.laminar.api.L.*
 import com.raquo.laminar.api.features.unitArrows
 import rdts.base.Uid
 

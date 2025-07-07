@@ -1,13 +1,7 @@
-package fahrtenbuch
+package fahrtenbuch.model
 
 import rdts.base.Uid
 import scala.scalajs.js.Date
-import com.raquo.laminar.api.L.{*, given}
-import com.raquo.laminar.api.features.unitArrows
-import org.scalajs.dom.HTMLTableRowElement
-import com.raquo.laminar.nodes.ReactiveHtmlElement
-import scala.annotation.threadUnsafe
-import fahrtenbuch.Main.entryEditBus
 import org.getshaka.nativeconverter.NativeConverter
 import org.getshaka.nativeconverter.ParseState
 import scala.scalajs.js

@@ -8,6 +8,8 @@ lazy val fahrtenbuch = project
   )
   .settings(
     scalaVersion := "3.7.1",
+    scalacOptions += "-Xfatal-warnings",
+    scalacOptions += "-Wunused:imports",
 
     // Tell Scala.js that this is an application with a main method
     scalaJSUseMainModuleInitializer := true,

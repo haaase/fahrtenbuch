@@ -1,18 +1,14 @@
 package fahrtenbuch
 
-import com.raquo.laminar.api.L.{*, given}
-import com.raquo.laminar.api.features.unitArrows
+import com.raquo.laminar.api.L.*
 import fahrtenbuch.DexieDB.entriesObservable
 import org.scalajs.dom
-import rdts.base.Uid
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.scalajs.js
-import scala.scalajs.js.Date
-import scala.scalajs.js.annotation.*
 import scala.util.Failure
 import scala.util.Success
 
+import model.Entry
 import components.AppComponent
 
 @main

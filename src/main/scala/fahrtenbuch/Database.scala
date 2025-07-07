@@ -1,15 +1,17 @@
 package fahrtenbuch
 
+import org.getshaka.nativeconverter.NativeConverter
 import org.scalablytyped.runtime.StringDictionary
 import typings.dexie.mod.Dexie
-import scala.concurrent.Future
-import typings.dexie.mod.{Table, liveQuery}
-import scala.scalajs.js
-import org.getshaka.nativeconverter.NativeConverter
-import scala.concurrent.ExecutionContext.Implicits.global
 import typings.dexie.mod.Observable
-import com.raquo.airstream.core.Signal
-import com.raquo.airstream.core.EventStream
+import typings.dexie.mod.Table
+import typings.dexie.mod.liveQuery
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.scalajs.js
+
+import model.Entry
 
 object DexieDB {
 

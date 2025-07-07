@@ -1,9 +1,11 @@
 package fahrtenbuch.components
 
-import com.raquo.laminar.api.L.{*, given}
+//import com.raquo.laminar.api.L.{*, given}
+import com.raquo.laminar.api.L.*
+
 import com.raquo.laminar.api.features.unitArrows
-import fahrtenbuch.Entry
 import fahrtenbuch.Main.entryEditBus
+import fahrtenbuch.model.Entry
 import rdts.base.Uid
 
 class NewEntryInput(showNewEntryField: Var[Boolean]):
