@@ -5,6 +5,7 @@ import org.scalajs.dom.HTMLTableRowElement
 import com.raquo.laminar.api.L.*
 import com.raquo.laminar.api.features.unitArrows
 import rdts.base.Uid
+import scala.util.Try
 
 class EntryComponent(
     entry: Entry,
@@ -15,10 +16,60 @@ class EntryComponent(
   def render: ReactiveHtmlElement[HTMLTableRowElement] = {
     if editMode then
       val driverInput = input(cls := "input", value := entry.driver.payload)
+
       val startKmInput =
-        input(cls := "input", value := entry.startKm.payload.toString())
+        input(
+          `type` := "number",
+          value := entry.startKm.payload.toString()
+        )
       val endKmInput =
-        input(cls := "input", value := entry.endKm.payload.toString())
+        input(
+          `type` := "number",
+          value := entry.endKm.payload.toString()
+        )
+
+      // Validation signals
+      val startKmValue = startKmInput
+        .events(onInput)
+        .mapTo(startKmInput.ref.value)
+        .startWith(entry.startKm.payload.toString())
+      val endKmValue = endKmInput
+        .events(onInput)
+        .mapTo(endKmInput.ref.value)
+        .startWith(entry.endKm.payload.toString())
+
+      val startKmValid =
+        startKmValue.map(value => Try(value.toDouble).isSuccess)
+      val endKmValid = endKmValue.map(value => Try(value.toDouble).isSuccess)
+
+      val rangeValid = startKmValue.combineWithFn(endKmValue) { (start, end) =>
+        Try(start.toDouble).toOption.zip(Try(end.toDouble).toOption) match {
+          case Some((startVal, endVal)) => endVal > startVal
+          case None => true // Don't show range error if values are invalid
+        }
+      }
+
+      val startKmError = startKmValid.combineWithFn(rangeValid) {
+        (valid, range) =>
+          !valid || !range
+      }
+
+      val endKmError = endKmValid.combineWithFn(rangeValid) { (valid, range) =>
+        !valid || !range
+      }
+
+      startKmInput.amend(
+        cls <-- startKmError.map(error =>
+          if error then "input is-danger" else "input"
+        )
+      )
+
+      endKmInput.amend(
+        cls <-- endKmError.map(error =>
+          if error then "input is-danger" else "input"
+        )
+      )
+
       val animalInput = input(cls := "input", value := entry.animal.payload)
       val costWearInput =
         input(cls := "input", value := entry.costWear.toString())

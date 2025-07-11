@@ -9,13 +9,59 @@ import fahrtenbuch.model.Entry
 import rdts.base.Uid
 import rdts.datatypes.LastWriterWins
 import scala.scalajs.js.Date
+import scala.util.Try
 
 class NewEntryInput(showNewEntryField: Var[Boolean]):
   val newEntryDriver = input(cls := "input")
-  val newEntryStartKm = input(cls := "input")
-  val newEntryEndKm = input(cls := "input")
+  val newEntryStartKm = input(`type` := "number")
+  val newEntryEndKm = input(`type` := "number")
   val newEntryAnimal = input(cls := "input")
   val newEntryPaid = input(`type` := "checkbox")
+
+  // Validation signals
+  val startKmValue = newEntryStartKm
+    .events(onInput)
+    .mapTo(newEntryStartKm.ref.value)
+    .startWith("")
+  val endKmValue = newEntryEndKm
+    .events(onInput)
+    .mapTo(newEntryEndKm.ref.value)
+    .startWith("")
+
+  val startKmValid =
+    startKmValue.map(value => value.isEmpty || Try(value.toDouble).isSuccess)
+  val endKmValid =
+    endKmValue.map(value => value.isEmpty || Try(value.toDouble).isSuccess)
+
+  val rangeValid = startKmValue.combineWithFn(endKmValue) { (start, end) =>
+    if (start.isEmpty || end.isEmpty) true
+    else {
+      Try(start.toDouble).toOption.zip(Try(end.toDouble).toOption) match {
+        case Some((startVal, endVal)) => endVal > startVal
+        case None => true // Don't show range error if values are invalid
+      }
+    }
+  }
+
+  val startKmError = startKmValid.combineWithFn(rangeValid) { (valid, range) =>
+    !valid || !range
+  }
+
+  val endKmError = endKmValid.combineWithFn(rangeValid) { (valid, range) =>
+    !valid || !range
+  }
+
+  newEntryStartKm.amend(
+    cls <-- startKmError.map(error =>
+      if error then "input is-danger" else "input"
+    )
+  )
+
+  newEntryEndKm.amend(
+    cls <-- endKmError.map(error =>
+      if error then "input is-danger" else "input"
+    )
+  )
 
   def render =
     tr(
