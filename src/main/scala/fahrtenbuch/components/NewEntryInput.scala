@@ -7,6 +7,8 @@ import com.raquo.laminar.api.features.unitArrows
 import fahrtenbuch.Main.entryEditBus
 import fahrtenbuch.model.Entry
 import rdts.base.Uid
+import rdts.datatypes.LastWriterWins
+import scala.scalajs.js.Date
 
 class NewEntryInput(showNewEntryField: Var[Boolean]):
   val newEntryDriver = input(cls := "input")
@@ -17,6 +19,7 @@ class NewEntryInput(showNewEntryField: Var[Boolean]):
 
   def render =
     tr(
+      td(),
       td(newEntryDriver),
       td(newEntryStartKm),
       td(newEntryEndKm),
@@ -29,13 +32,14 @@ class NewEntryInput(showNewEntryField: Var[Boolean]):
           cls := "button is-success",
           onClick --> {
             val id = Uid.gen()
-            val driver = newEntryDriver.ref.value
-            val startKm = newEntryStartKm.ref.value.toDouble
-            val endKm = newEntryEndKm.ref.value.toDouble
-            val animal = newEntryAnimal.ref.value
-            val paid = newEntryPaid.ref.checked
+            val driver = LastWriterWins.now(newEntryDriver.ref.value)
+            val startKm = LastWriterWins.now(newEntryStartKm.ref.value.toDouble)
+            val endKm = LastWriterWins.now(newEntryEndKm.ref.value.toDouble)
+            val animal = LastWriterWins.now(newEntryAnimal.ref.value)
+            val paid = LastWriterWins.now(newEntryPaid.ref.checked)
+            val date = LastWriterWins.now(new Date(Date.now()))
             entryEditBus.emit(
-              Entry(id, startKm, endKm, animal, paid, driver)
+              Entry(id, startKm, endKm, animal, paid, driver, date)
             )
             showNewEntryField.set(false)
             newEntryDriver.ref.value = ""

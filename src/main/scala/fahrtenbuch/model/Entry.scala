@@ -5,17 +5,18 @@ import scala.scalajs.js.Date
 import org.getshaka.nativeconverter.NativeConverter
 import org.getshaka.nativeconverter.ParseState
 import scala.scalajs.js
+import rdts.datatypes.LastWriterWins
 
 case class Entry(
     id: Uid,
-    startKm: Double,
-    endKm: Double,
-    animal: String,
-    paid: Boolean,
-    driver: String,
-    date: Option[Date] = None
+    startKm: LastWriterWins[Double],
+    endKm: LastWriterWins[Double],
+    animal: LastWriterWins[String],
+    paid: LastWriterWins[Boolean],
+    driver: LastWriterWins[String],
+    date: LastWriterWins[Date]
 ) derives NativeConverter:
-  val distance = endKm - startKm
+  val distance = endKm.payload - startKm.payload
 
   // 13 cent pro km, 5 cent Abnutzung
   def costGas: Double = distance * 0.13

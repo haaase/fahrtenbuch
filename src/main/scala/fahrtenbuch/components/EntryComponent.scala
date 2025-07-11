@@ -14,18 +14,20 @@ class EntryComponent(
 ):
   def render: ReactiveHtmlElement[HTMLTableRowElement] = {
     if editMode then
-      val driverInput = input(cls := "input", value := entry.driver)
+      val driverInput = input(cls := "input", value := entry.driver.payload)
       val startKmInput =
-        input(cls := "input", value := entry.startKm.toString())
-      val endKmInput = input(cls := "input", value := entry.endKm.toString())
-      val animalInput = input(cls := "input", value := entry.animal)
+        input(cls := "input", value := entry.startKm.payload.toString())
+      val endKmInput =
+        input(cls := "input", value := entry.endKm.payload.toString())
+      val animalInput = input(cls := "input", value := entry.animal.payload)
       val costWearInput =
         input(cls := "input", value := entry.costWear.toString())
       val costTotalInput =
         input(cls := "input", value := entry.costTotal.toString())
-      val paidCheckbox = input(`type` := "checkbox", checked := entry.paid)
+      val paidCheckbox =
+        input(`type` := "checkbox", checked := entry.paid.payload)
       tr(
-//        td(input(cls := "input", value := entry.date.toDateString())),
+        td(),
         td(driverInput),
         td(startKmInput),
         td(endKmInput),
@@ -40,10 +42,11 @@ class EntryComponent(
               editClickBus.emit(entry.id, false)
               entryEditBus.emit(
                 entry.copy(
-                  startKm = startKmInput.ref.value.toDouble,
-                  endKm = endKmInput.ref.value.toDouble,
-                  animal = animalInput.ref.value,
-                  paid = paidCheckbox.ref.checked
+                  startKm =
+                    entry.startKm.write(startKmInput.ref.value.toDouble),
+                  endKm = entry.endKm.write(endKmInput.ref.value.toDouble),
+                  animal = entry.animal.write(animalInput.ref.value),
+                  paid = entry.paid.write(paidCheckbox.ref.checked)
                 )
               )
             },
@@ -56,14 +59,14 @@ class EntryComponent(
       )
     else
       tr(
-        //       td(entry.date.toDateString()),
-        td(entry.driver),
-        td(entry.startKm),
-        td(entry.endKm),
-        td(entry.animal),
+        td(entry.date.payload.toISOString()),
+        td(entry.driver.payload),
+        td(entry.startKm.payload),
+        td(entry.endKm.payload),
+        td(entry.animal.payload),
         td(s"${entry.costWear}€"),
         td(s"${entry.costTotal}€"),
-        td(if entry.paid then "Ja" else "Nein"),
+        td(if entry.paid.payload then "Ja" else "Nein"),
         td(
           button(
             cls := "button is-link",

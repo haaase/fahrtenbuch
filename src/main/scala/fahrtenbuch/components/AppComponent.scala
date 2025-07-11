@@ -5,7 +5,7 @@ import fahrtenbuch.model.Entry
 import fahrtenbuch.Main.entryEditBus
 import rdts.base.Uid
 
-class AppComponent(allEntries: Signal[List[Entry]]):
+class AppComponent(allEntries: Signal[Set[Entry]]):
   // tracks whenever a user clicks on an edit button
   val editClickBus = new EventBus[(Uid, Boolean)]
 
@@ -21,7 +21,7 @@ class AppComponent(allEntries: Signal[List[Entry]]):
       .combineWith(editStateSignal)
       .map { case (entries, editState) =>
         entries.toList
-          .sortBy(_.id)
+          .sortBy(_.date.payload.getTime())
           .map(entry =>
             EntryComponent(
               entry,
@@ -42,7 +42,7 @@ class AppComponent(allEntries: Signal[List[Entry]]):
         cls := "table",
         thead(
           tr(
-//            th("Date"),
+            th("Datum"),
             th("Fahrer*in"),
             th("Start Km"),
             th("Ende Km"),

@@ -30,13 +30,19 @@ object Main {
   println("test")
 
   val allEntriesVar = Var(Set.empty[Entry])
+
+  // update entries whenever db updates
   entriesObservable.subscribe(entries =>
     entries.onComplete {
       case Failure(exception) => println("failed to get entries from db")
       case Success(value)     => allEntriesVar.set(value.toSet)
     }
   )
-  val allEntries: Signal[List[Entry]] = allEntriesVar.signal.map(_.toList)
+
+  // update db when edit events happen
   entryEditBus.stream.addObserver(entryDbObserver)(using unsafeWindowOwner)
+
+  val allEntries: Signal[Set[Entry]] =
+    allEntriesVar.signal
 
 }
