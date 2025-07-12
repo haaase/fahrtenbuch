@@ -7,7 +7,6 @@ import com.raquo.laminar.api.features.unitArrows
 import fahrtenbuch.Main.entryEditBus
 import fahrtenbuch.model.{Entry, EntryId}
 import rdts.datatypes.LastWriterWins
-import scala.scalajs.js.Date
 import scala.util.Try
 
 class NewEntryInput(showNewEntryField: Var[Boolean]):
@@ -82,9 +81,8 @@ class NewEntryInput(showNewEntryField: Var[Boolean]):
             val endKm = LastWriterWins.now(newEntryEndKm.ref.value.toDouble)
             val animal = LastWriterWins.now(newEntryAnimal.ref.value)
             val paid = LastWriterWins.now(newEntryPaid.ref.checked)
-            val date = LastWriterWins.now(new Date(Date.now()))
             entryEditBus.emit(
-              Entry(id, startKm, endKm, animal, paid, driver, date)
+              Entry(id, startKm, endKm, animal, paid, driver)
             )
             showNewEntryField.set(false)
             newEntryDriver.ref.value = ""

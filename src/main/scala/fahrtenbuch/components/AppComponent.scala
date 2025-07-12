@@ -23,7 +23,7 @@ class AppComponent(
       .combineWith(editStateSignal)
       .map { case (entries, editState) =>
         entries.toList
-          .sortBy(_.date.payload.getTime())
+          .sortBy(_.date.payload)
           .map(entry =>
             EntryComponent(
               entry,

@@ -5,6 +5,7 @@ import org.scalajs.dom.HTMLTableRowElement
 import com.raquo.laminar.api.L.*
 import com.raquo.laminar.api.features.unitArrows
 import scala.util.Try
+import scala.scalajs.js.Date
 
 class EntryComponent(
     entry: Entry,
@@ -110,7 +111,7 @@ class EntryComponent(
       )
     else
       tr(
-        td(entry.date.payload.toISOString()),
+        td(new Date(entry.date.payload).toISOString()),
         td(entry.driver.payload),
         td(entry.startKm.payload),
         td(entry.endKm.payload),

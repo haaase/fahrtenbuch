@@ -14,8 +14,6 @@ import scala.scalajs.js
 import model.Entry
 import model.EntryId
 import rdts.base.Lattice
-import rdts.datatypes.LastWriterWins
-import scala.scalajs.js.Date
 import scala.util.Failure
 import scala.util.Success
 
@@ -43,56 +41,27 @@ object DexieDB {
       .toFuture
       .map(_.toOption.map(NativeConverter[Entry].fromNative(_)))
 
-  def insertEntry(entry: Entry): Unit = {
-    val e: Future[Option[Entry]] = getEntry(entry.id)
-    e.flatMap {
-      case Some(oldEntry) =>
-        println(s"found old: $oldEntry")
-        println(s"found new: $entry")
-        println(oldEntry.id == entry.id)
-        val newEntry = Lattice[Entry].merge(entry, entry)
-        val newEntry2 = Lattice[Entry].merge(oldEntry, oldEntry)
-        println(oldEntry.id)
-        println(entry.id)
-        val test =
-          Lattice[Entry].merge(
-            Entry(
-              EntryId("1"),
-              LastWriterWins.now(0),
-              LastWriterWins.now(2),
-              LastWriterWins.now(""),
-              LastWriterWins.now(false),
-              LastWriterWins.now("Dirk"),
-              LastWriterWins.now(new Date())
-            ),
-            Entry(
-              EntryId("1"),
-              LastWriterWins.now(0),
-              LastWriterWins.now(2),
-              LastWriterWins.now(""),
-              LastWriterWins.now(false),
-              LastWriterWins.now("Dirk"),
-              LastWriterWins.now(new Date())
-            )
-          )
-        val newEntry3 =
-          Lattice[Entry].merge(oldEntry, entry.copy(id = oldEntry.id))
-        println("yolo")
-        Future.unit
-      // entriesTable.put(newEntry.toNative).toFuture
-      case _ =>
-        entriesTable.put(entry.toNative).toFuture
-    }.onComplete {
-      case Failure(exception) => println(s"failed with $exception")
-      case Success(value)     => ()
+  /** Inserts an entry into the database and merges it with an existing entry if
+    * it exists.
+    *
+    * @param entry
+    *   The entry to be inserted or updated.
+    */
+  def upsertEntry(entry: Entry): Unit = {
+    for {
+      oldEntry <- getEntry(entry.id)
+      newEntry = oldEntry match
+        case Some(old) =>
+          Lattice[Entry].merge(entry, old)
+        case _ => entry
+      result <- entriesTable.put(newEntry.toNative).toFuture
+    } yield {
+      result
     }
-//        .toFuture
-//        .map(e =>
-//          if e.isUndefined then entriesTable.put(entry.toNative).toFuture
-//          else
-//            val dbEntry = NativeConverter[Entry].fromNative(e)
-//            Lattice[Entry].merge(entry, dbEntry)
-//        )
+  }.onComplete {
+    case Failure(exception) =>
+      println(s"Failed to write entry to db: $exception")
+    case Success(value) => ()
   }
 
   def getAllEntries(): Future[Seq[Entry]] = {

@@ -25,7 +25,7 @@ object Main {
   // track changes to entries
   val entryEditBus = new EventBus[Entry]
   val entryDbObserver =
-    Observer[Entry](onNext = DexieDB.insertEntry(_))
+    Observer[Entry](onNext = DexieDB.upsertEntry(_))
   entryEditBus.stream.tapEach(_ => println("lalilu"))
   println("test")
 

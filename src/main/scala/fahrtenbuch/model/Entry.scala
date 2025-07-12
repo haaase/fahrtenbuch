@@ -31,7 +31,7 @@ case class Entry(
     animal: LastWriterWins[String],
     paid: LastWriterWins[Boolean],
     driver: LastWriterWins[String],
-    date: LastWriterWins[Date]
+    date: LastWriterWins[Double]
 ) derives NativeConverter:
   val distance = endKm.payload - startKm.payload
 
@@ -42,3 +42,21 @@ case class Entry(
 
 object Entry:
   given Lattice[Entry] = Lattice.derived
+
+  def apply(
+      id: EntryId,
+      startKm: LastWriterWins[Double],
+      endKm: LastWriterWins[Double],
+      animal: LastWriterWins[String],
+      paid: LastWriterWins[Boolean],
+      driver: LastWriterWins[String]
+  ): Entry =
+    Entry(
+      id,
+      startKm,
+      endKm,
+      animal,
+      paid,
+      driver,
+      LastWriterWins.now(Date.now())
+    )
