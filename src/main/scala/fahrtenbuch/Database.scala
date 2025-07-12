@@ -19,7 +19,7 @@ import scala.util.Success
 
 object DexieDB {
 
-  private val schemaVersion = 1.1
+  private val schemaVersion = 1.3
 
   private val dexieDB: Dexie = new Dexie.^("fahrtenbuch")
   dexieDB

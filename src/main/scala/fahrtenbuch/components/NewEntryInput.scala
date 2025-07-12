@@ -77,8 +77,9 @@ class NewEntryInput(showNewEntryField: Var[Boolean]):
           onClick --> {
             val id = EntryId.gen()
             val driver = LastWriterWins.now(newEntryDriver.ref.value)
-            val startKm = LastWriterWins.now(newEntryStartKm.ref.value.toDouble)
-            val endKm = LastWriterWins.now(newEntryEndKm.ref.value.toDouble)
+            val startKm =
+              LastWriterWins.now(BigDecimal(newEntryStartKm.ref.value))
+            val endKm = LastWriterWins.now(BigDecimal(newEntryEndKm.ref.value))
             val animal = LastWriterWins.now(newEntryAnimal.ref.value)
             val paid = LastWriterWins.now(newEntryPaid.ref.checked)
             entryEditBus.emit(

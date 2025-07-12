@@ -111,13 +111,21 @@ class EntryComponent(
       )
     else
       tr(
-        td(new Date(entry.date.payload).toISOString()),
+        td(new Date(entry.date.payload).toDateString()),
         td(entry.driver.payload),
-        td(entry.startKm.payload),
-        td(entry.endKm.payload),
+        td(
+          entry.startKm.payload
+            .setScale(0, BigDecimal.RoundingMode.HALF_UP)
+            .toString()
+        ),
+        td(
+          entry.endKm.payload
+            .setScale(0, BigDecimal.RoundingMode.HALF_UP)
+            .toString()
+        ),
         td(entry.animal.payload),
-        td(s"${entry.costWear}€"),
-        td(s"${entry.costTotal}€"),
+        td(s"${entry.costWear.setScale(2, BigDecimal.RoundingMode.HALF_UP)}€"),
+        td(s"${entry.costTotal.setScale(2, BigDecimal.RoundingMode.HALF_UP)}€"),
         td(if entry.paid.payload then "Ja" else "Nein"),
         td(
           button(

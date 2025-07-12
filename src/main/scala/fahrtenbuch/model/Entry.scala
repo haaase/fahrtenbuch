@@ -26,27 +26,37 @@ object EntryId:
 
 case class Entry(
     id: EntryId,
-    startKm: LastWriterWins[Double],
-    endKm: LastWriterWins[Double],
+    startKm: LastWriterWins[BigDecimal],
+    endKm: LastWriterWins[BigDecimal],
     animal: LastWriterWins[String],
     paid: LastWriterWins[Boolean],
     driver: LastWriterWins[String],
-    date: LastWriterWins[Double]
+    date: LastWriterWins[Double],
+    gasPricePerKm: LastWriterWins[BigDecimal] = LastWriterWins.now(0.13),
+    wearPricePerKm: LastWriterWins[BigDecimal] = LastWriterWins.now(0.05)
 ) derives NativeConverter:
   val distance = endKm.payload - startKm.payload
 
-  // 13 cent pro km, 5 cent Abnutzung
-  def costGas: Double = distance * 0.13
-  def costWear: Double = distance * 0.05
-  def costTotal: Double = costGas + costWear
+  // initial 13 cent pro km, 5 cent Abnutzung
+  def costGas: BigDecimal = distance * gasPricePerKm.payload
+  def costWear: BigDecimal = distance * wearPricePerKm.payload
+  def costTotal: BigDecimal = costGas + costWear
 
 object Entry:
   given Lattice[Entry] = Lattice.derived
 
+  given NativeConverter[BigDecimal] with {
+    extension (a: BigDecimal)
+      override def toNative: js.Any =
+        a.toString()
+    override def fromNative(ps: ParseState): BigDecimal =
+      BigDecimal(ps.json.asInstanceOf[String])
+  }
+
   def apply(
       id: EntryId,
-      startKm: LastWriterWins[Double],
-      endKm: LastWriterWins[Double],
+      startKm: LastWriterWins[BigDecimal],
+      endKm: LastWriterWins[BigDecimal],
       animal: LastWriterWins[String],
       paid: LastWriterWins[Boolean],
       driver: LastWriterWins[String]
