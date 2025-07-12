@@ -42,6 +42,9 @@ object Main {
   // update db when edit events happen
   entryEditBus.stream.addObserver(entryDbObserver)(using unsafeWindowOwner)
 
+  // sync out changes
+  entryEditBus.stream.addObserver(Sync.entrySyncOut)(using unsafeWindowOwner)
+
   val allEntries: Signal[Set[Entry]] =
     allEntriesVar.signal
 

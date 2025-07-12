@@ -13,10 +13,13 @@ import typings.trystero.mod.joinRoom
 import typings.trystero.mod.selfId
 
 import scala.scalajs.js
+import scala.scalajs.js.JSConverters.*
 import typings.trystero.mod.ActionProgress
 import typings.trystero.mod.ActionSender
 import typings.trystero.mod.ActionReceiver
 import model.Entry
+import org.getshaka.nativeconverter.NativeConverter
+import fahrtenbuch.Trystero.updatePeers
 
 object Trystero:
   private val eturn = new RTCIceServer:
@@ -48,6 +51,7 @@ object Trystero:
   // track online peers
   val peerList: Var[List[(String, RTCPeerConnection)]] = Var(List.empty)
   def updatePeers(): Unit =
+    println(s"List of peers: ${room.getPeers().toList}")
     peerList.set(room.getPeers().toList)
   println(s"my peer ID is $selfId")
   room.onPeerJoin(peerId =>
@@ -69,3 +73,17 @@ object Actions:
 
   def sendEntry(entry: Entry): Unit =
     entryAction._1(entry.toNative)
+
+  def sendEntry(entry: Entry, targetPeers: List[String]): Unit =
+    if targetPeers.isEmpty then sendEntry(entry)
+    else
+      entryAction._1(data = entry.toNative, targetPeers = targetPeers.toJSArray)
+
+  def receiveEntry(callback: Entry => Unit): Unit =
+    entryAction._2((data: js.Any, peerId: String, metaData) =>
+      val incoming = NativeConverter[Entry].fromNative(data)
+      callback(incoming)
+    )
+
+  // update peers when receiving entries
+  receiveEntry(_ => updatePeers())
