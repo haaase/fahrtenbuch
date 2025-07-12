@@ -1,6 +1,7 @@
 package fahrtenbuch
 
 import com.raquo.laminar.api.L.*
+import org.scalajs.dom
 import org.scalajs.dom.RTCConfiguration
 import org.scalajs.dom.RTCIceServer
 import org.scalajs.dom.RTCPeerConnection
@@ -12,6 +13,10 @@ import typings.trystero.mod.joinRoom
 import typings.trystero.mod.selfId
 
 import scala.scalajs.js
+import typings.trystero.mod.ActionProgress
+import typings.trystero.mod.ActionSender
+import typings.trystero.mod.ActionReceiver
+import model.Entry
 
 object Trystero:
   private val eturn = new RTCIceServer:
@@ -35,11 +40,13 @@ object Trystero:
   }
 
   // Public API
-  val room: Room = joinRoom(MyConfig, "fahrtenbuch")
-  val peerList: Var[List[(String, RTCPeerConnection)]] = Var(List.empty)
+  val roomId = dom.window.location.hash
+  val room: Room = joinRoom(MyConfig, roomId)
+  println(s"joining room $roomId")
   val userId: Var[String] = Var(selfId)
 
-  // listen for incoming messages
+  // track online peers
+  val peerList: Var[List[(String, RTCPeerConnection)]] = Var(List.empty)
   def updatePeers(): Unit =
     peerList.set(room.getPeers().toList)
   println(s"my peer ID is $selfId")
@@ -51,3 +58,14 @@ object Trystero:
     println(s"$peerId left")
     updatePeers()
   )
+  val onlineStatus: Signal[Boolean] = peerList.signal.map(_.nonEmpty)
+
+object Actions:
+  // setup actions
+  private val entryAction: js.Tuple3[ActionSender[js.Any], ActionReceiver[
+    js.Any
+  ], ActionProgress] = Trystero.room.makeAction[js.Any]("entry")
+  private val trysteroReceiveEntry: ActionReceiver[js.Any] = entryAction._2
+
+  def sendEntry(entry: Entry): Unit =
+    entryAction._1(entry.toNative)

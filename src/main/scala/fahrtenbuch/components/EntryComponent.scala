@@ -1,16 +1,15 @@
 package fahrtenbuch.components
-import fahrtenbuch.model.Entry
+import fahrtenbuch.model.{Entry, EntryId}
 import com.raquo.laminar.nodes.ReactiveHtmlElement
 import org.scalajs.dom.HTMLTableRowElement
 import com.raquo.laminar.api.L.*
 import com.raquo.laminar.api.features.unitArrows
-import rdts.base.Uid
 import scala.util.Try
 
 class EntryComponent(
     entry: Entry,
     editMode: Boolean,
-    editClickBus: EventBus[(Uid, Boolean)],
+    editClickBus: EventBus[(EntryId, Boolean)],
     entryEditBus: EventBus[Entry]
 ):
   def render: ReactiveHtmlElement[HTMLTableRowElement] = {
@@ -93,11 +92,12 @@ class EntryComponent(
               editClickBus.emit(entry.id, false)
               entryEditBus.emit(
                 entry.copy(
-                  startKm =
-                    entry.startKm.write(startKmInput.ref.value.toDouble),
-                  endKm = entry.endKm.write(endKmInput.ref.value.toDouble),
-                  animal = entry.animal.write(animalInput.ref.value),
-                  paid = entry.paid.write(paidCheckbox.ref.checked)
+                  driver = entry.driver.write(driverInput.ref.value)
+//                  startKm =
+//                    entry.startKm.write(startKmInput.ref.value.toDouble),
+//                  endKm = entry.endKm.write(endKmInput.ref.value.toDouble),
+//                  animal = entry.animal.write(animalInput.ref.value),
+//                  paid = entry.paid.write(paidCheckbox.ref.checked)
                 )
               )
             },

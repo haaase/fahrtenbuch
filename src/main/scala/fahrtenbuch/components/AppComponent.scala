@@ -1,17 +1,19 @@
 package fahrtenbuch.components
 
 import com.raquo.laminar.api.L.*
-import fahrtenbuch.model.Entry
+import fahrtenbuch.model.{Entry, EntryId}
 import fahrtenbuch.Main.entryEditBus
-import rdts.base.Uid
 
-class AppComponent(allEntries: Signal[Set[Entry]]):
+class AppComponent(
+    allEntries: Signal[Set[Entry]],
+    onlineStatus: Signal[Boolean]
+):
   // tracks whenever a user clicks on an edit button
-  val editClickBus = new EventBus[(Uid, Boolean)]
+  val editClickBus = new EventBus[(EntryId, Boolean)]
 
   // tracks which entries are currently being edited
-  val editStateSignal: Signal[Map[Uid, Boolean]] =
-    editClickBus.stream.foldLeft(Map.empty[Uid, Boolean]) {
+  val editStateSignal: Signal[Map[EntryId, Boolean]] =
+    editClickBus.stream.foldLeft(Map.empty[EntryId, Boolean]) {
       case (acc, (id, value)) =>
         acc + (id -> value)
     }
@@ -37,7 +39,7 @@ class AppComponent(allEntries: Signal[Set[Entry]]):
   def render(): HtmlElement =
     div(
       cls := "app content",
-      h1("Fahrtenbuch"),
+      h1("Fahrtenbuch", OnlineStatusComponent(onlineStatus).render()),
       table(
         cls := "table",
         thead(

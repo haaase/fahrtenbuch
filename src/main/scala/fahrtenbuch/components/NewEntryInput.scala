@@ -5,8 +5,7 @@ import com.raquo.laminar.api.L.*
 
 import com.raquo.laminar.api.features.unitArrows
 import fahrtenbuch.Main.entryEditBus
-import fahrtenbuch.model.Entry
-import rdts.base.Uid
+import fahrtenbuch.model.{Entry, EntryId}
 import rdts.datatypes.LastWriterWins
 import scala.scalajs.js.Date
 import scala.util.Try
@@ -77,7 +76,7 @@ class NewEntryInput(showNewEntryField: Var[Boolean]):
         button(
           cls := "button is-success",
           onClick --> {
-            val id = Uid.gen()
+            val id = EntryId.gen()
             val driver = LastWriterWins.now(newEntryDriver.ref.value)
             val startKm = LastWriterWins.now(newEntryStartKm.ref.value.toDouble)
             val endKm = LastWriterWins.now(newEntryEndKm.ref.value.toDouble)

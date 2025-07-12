@@ -13,11 +13,11 @@ import components.AppComponent
 
 @main
 def Fahrtenbuch(): Unit =
-  val appComponent = AppComponent(Main.allEntries)
+  val appComponent = AppComponent(Main.allEntries, Trystero.onlineStatus)
 
   renderOnDomContentLoaded(
     dom.document.getElementById("app"),
-    AppComponent(Main.allEntries).render()
+    appComponent.render()
   )
 
 object Main {
