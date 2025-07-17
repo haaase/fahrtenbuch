@@ -90,17 +90,36 @@ class EntryComponent(
           button(
             cls := "button is-success",
             onClick --> {
-              editClickBus.emit(entry.id, false)
+              val newDriver =
+                if driverInput.ref.value != entry.driver.payload then
+                  entry.driver.write(driverInput.ref.value)
+                else entry.driver
+              val newStartKm =
+                if startKmInput.ref.value != entry.startKm.payload.toString then
+                  entry.startKm.write(BigDecimal(startKmInput.ref.value))
+                else entry.startKm
+              val newEndKm =
+                if endKmInput.ref.value != entry.endKm.payload.toString then
+                  entry.endKm.write(BigDecimal(endKmInput.ref.value))
+                else entry.endKm
+              val newAnimal =
+                if animalInput.ref.value != entry.animal.payload then
+                  entry.animal.write(animalInput.ref.value)
+                else entry.animal
+              val newPaid =
+                if paidCheckbox.ref.checked != entry.paid.payload then
+                  entry.paid.write(paidCheckbox.ref.checked)
+                else entry.paid
               entryEditBus.emit(
                 entry.copy(
-                  driver = entry.driver.write(driverInput.ref.value)
-//                  startKm =
-//                    entry.startKm.write(startKmInput.ref.value.toDouble),
-//                  endKm = entry.endKm.write(endKmInput.ref.value.toDouble),
-//                  animal = entry.animal.write(animalInput.ref.value),
-//                  paid = entry.paid.write(paidCheckbox.ref.checked)
+                  driver = newDriver,
+                  startKm = newStartKm,
+                  endKm = newEndKm,
+                  animal = newAnimal,
+                  paid = newPaid
                 )
               )
+              editClickBus.emit(entry.id, false)
             },
             span(
               cls := "icon edit",
