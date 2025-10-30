@@ -54,7 +54,11 @@ jobs:
           node-version: latest
           cache: npm
       - name: Install npm deps
-        run: npm install
+        run: |
+          npm install
+          cd core
+          npm install
+          cd ..
       - name: Build with vite
         run: npm run deploy
         env:
