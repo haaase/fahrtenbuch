@@ -1,0 +1,20 @@
+{
+  "name": "fahrtenbuch-core",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "deploy": "vite build --base=$BASE_PATH",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@scala-js/vite-plugin-scalajs": "^1.0.0",
+    "typescript": "^4.9.5",
+    "vite": "^6.2.3"
+  },
+  "dependencies": {
+    "trystero": "^0.22.0"
+  }
+}
