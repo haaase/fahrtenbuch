@@ -15,6 +15,12 @@ class EntryComponent(
 ):
   def render: ReactiveHtmlElement[HTMLTableRowElement] = {
     if editMode then
+      val dateInput =
+        input(
+          cls := "input",
+          value := new Date(entry.date.payload).toDateString()
+        )
+
       val driverInput = input(cls := "input", value := entry.driver.payload)
 
       val startKmInput =
@@ -78,7 +84,7 @@ class EntryComponent(
       val paidCheckbox =
         input(`type` := "checkbox", checked := entry.paid.payload)
       tr(
-        td(),
+        td(dateInput),
         td(driverInput),
         td(startKmInput),
         td(endKmInput),
@@ -90,6 +96,10 @@ class EntryComponent(
           button(
             cls := "button is-success",
             onClick --> {
+              val newDate =
+                val parsed = Date.parse(dateInput.ref.value)
+                if parsed != entry.date.payload then entry.date.write(parsed)
+                else entry.date
               val newDriver =
                 if driverInput.ref.value != entry.driver.payload then
                   entry.driver.write(driverInput.ref.value)
@@ -112,6 +122,7 @@ class EntryComponent(
                 else entry.paid
               entryEditBus.emit(
                 entry.copy(
+                  date = newDate,
                   driver = newDriver,
                   startKm = newStartKm,
                   endKm = newEndKm,
