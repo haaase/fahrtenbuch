@@ -3,6 +3,7 @@ import org.scalajs.linker.interface.ModuleSplitStyle
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.7.1"
 ThisBuild / scalacOptions ++= Seq("-Xfatal-warnings", "-Wunused:imports")
+val http4sVersion = "0.23.33"
 
 lazy val commonDependencies = Seq(
   libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.0",
@@ -39,6 +40,17 @@ lazy val core = project
     ),
     externalNpm := baseDirectory.value,
     commonDependencies
+  )
+
+lazy val server = project
+  .in(file("server"))
+  .dependsOn(core)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.http4s" %% "http4s-ember-client" % http4sVersion,
+      "org.http4s" %% "http4s-ember-server" % http4sVersion,
+      "org.http4s" %% "http4s-dsl"          % http4sVersion,
+    )
   )
 
 lazy val node = project
