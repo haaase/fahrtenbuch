@@ -63,6 +63,7 @@ jobs:
         run: npm run deploy
         env:
           BASE_PATH: "/fahrtenbuch"
+          SBT_OPTS: "-Xmx4G -Xms1G"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
