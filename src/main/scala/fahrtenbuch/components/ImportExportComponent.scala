@@ -30,54 +30,13 @@ class ImportExportComponent():
       cls := "import-export",
       div(
         cls := "file",
-        styleAttr := (if canShare then "display:none" else ""),
-        onClick --> { _ =>
-          DexieDB.dumpDB().onComplete {
-            case scala.util.Success(result) =>
-              val blob = new Blob(
-                js.Array(result),
-                new BlobPropertyBag {
-                  `type` = "application/json"
-                }
-              )
-              val objectUrl = URL.createObjectURL(blob)
-              val anchor = dom.document
-                .createElement("a")
-                .asInstanceOf[dom.HTMLAnchorElement]
-              anchor.href = objectUrl
-              val timestamp = new Date(Date.now()).toISOString()
-              anchor.download =
-                s"fahrtenbuch-export-${dom.window.location.hash}-$timestamp.json"
-              anchor.click()
-              URL.revokeObjectURL(objectUrl)
-            case scala.util.Failure(exception) =>
-              println(s"Failed to export database: $exception")
-          }
-        },
-        label(
-          cls := "file-label",
-          span(
-            cls := "file-cta",
-            span(
-              cls := "file-icon",
-              i(cls := "mdi mdi-download")
-            ),
-            span(
-              cls := "file-label",
-              "Daten exportieren"
-            )
-          )
-        )
-      ),
-      div(
-        cls := "file",
         styleAttr := (if canShare then "" else "display:none"),
         onClick --> { _ =>
           DexieDB.dumpDB().onComplete {
             case scala.util.Success(result) =>
               val timestamp = new Date(Date.now()).toISOString()
               val filename =
-                s"fahrtenbuch-export-${dom.window.location.hash}-$timestamp.json"
+                s"fahrtenbuch-export.json"
               val blob = new Blob(
                 js.Array(result),
                 new BlobPropertyBag { `type` = "application/json" }
@@ -112,6 +71,46 @@ class ImportExportComponent():
             span(
               cls := "file-label",
               "Daten teilen"
+            )
+          )
+        )
+      ),
+      div(
+        cls := "file",
+        onClick --> { _ =>
+          DexieDB.dumpDB().onComplete {
+            case scala.util.Success(result) =>
+              val blob = new Blob(
+                js.Array(result),
+                new BlobPropertyBag {
+                  `type` = "application/json"
+                }
+              )
+              val objectUrl = URL.createObjectURL(blob)
+              val anchor = dom.document
+                .createElement("a")
+                .asInstanceOf[dom.HTMLAnchorElement]
+              anchor.href = objectUrl
+              val timestamp = new Date(Date.now()).toISOString()
+              anchor.download =
+                s"fahrtenbuch-export-${dom.window.location.hash}-$timestamp.json"
+              anchor.click()
+              URL.revokeObjectURL(objectUrl)
+            case scala.util.Failure(exception) =>
+              println(s"Failed to export database: $exception")
+          }
+        },
+        label(
+          cls := "file-label",
+          span(
+            cls := "file-cta",
+            span(
+              cls := "file-icon",
+              i(cls := "mdi mdi-download")
+            ),
+            span(
+              cls := "file-label",
+              "Daten exportieren"
             )
           )
         )
