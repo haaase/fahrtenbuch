@@ -76,6 +76,9 @@ object DexieDB {
 
   def dumpDB(): Future[String] = {
     getAllEntries().map(_.toJson)
-    // getAllEntries().map(_.map(_.toJson).mkString(",\n"))
+  }
+
+  def loadDB(dump: String): Future[Unit] = {
+    Future(NativeConverter[Seq[Entry]].fromJson(dump).map(upsertEntry))
   }
 }

@@ -39,8 +39,11 @@ class AppComponent(
   def render(): HtmlElement =
     div(
       cls := "app content",
-      h1(
-        "Fahrtenbuch",
+      div(
+        cls := "header",
+        h1(
+          "Fahrtenbuch"
+        ),
         OnlineStatusComponent(onlineStatus).render(),
         ImportExportComponent().render()
       ),
