@@ -1,12 +1,12 @@
 import org.scalajs.linker.interface.ModuleSplitStyle
 
 ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / scalaVersion := "3.7.1"
-ThisBuild / scalacOptions ++= Seq("-Xfatal-warnings", "-Wunused:imports")
+ThisBuild / scalaVersion := "3.8.4"
+ThisBuild / scalacOptions ++= Seq("-Werror", "-Wunused:imports")
 val http4sVersion = "0.23.33"
 
 lazy val commonDependencies = Seq(
-  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.0",
+  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.1",
   libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1",
   libraryDependencies += "de.tu-darmstadt.stg" %%% "rdts" % "0.37.0",
   libraryDependencies += "org.getshaka" %%% "native-converter" % "0.9.0"
@@ -49,7 +49,7 @@ lazy val server = project
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-ember-client" % http4sVersion,
       "org.http4s" %% "http4s-ember-server" % http4sVersion,
-      "org.http4s" %% "http4s-dsl"          % http4sVersion,
+      "org.http4s" %% "http4s-dsl" % http4sVersion
     )
   )
 
