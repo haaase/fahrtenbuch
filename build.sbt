@@ -2,7 +2,10 @@ import org.scalajs.linker.interface.ModuleSplitStyle
 
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.8.4"
-ThisBuild / scalacOptions ++= Seq("-Werror", "-Wunused:imports")
+ThisBuild / scalacOptions ++= Seq(
+    "-Werror",
+    "-deprecation",
+    "-Wunused:imports")
 val http4sVersion = "0.23.33"
 
 lazy val commonDependencies = Seq(

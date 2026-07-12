@@ -73,4 +73,9 @@ object DexieDB {
         .toSeq
     }
   }
+
+  def dumpDB(): Future[String] = {
+    getAllEntries().map(_.toJson)
+    // getAllEntries().map(_.map(_.toJson).mkString(",\n"))
+  }
 }

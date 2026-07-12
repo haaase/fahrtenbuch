@@ -13,7 +13,7 @@ class AppComponent(
 
   // tracks which entries are currently being edited
   val editStateSignal: Signal[Map[EntryId, Boolean]] =
-    editClickBus.stream.foldLeft(Map.empty[EntryId, Boolean]) {
+    editClickBus.stream.scanLeft(Map.empty[EntryId, Boolean]) {
       case (acc, (id, value)) =>
         acc + (id -> value)
     }
@@ -39,7 +39,11 @@ class AppComponent(
   def render(): HtmlElement =
     div(
       cls := "app content",
-      h1("Fahrtenbuch", OnlineStatusComponent(onlineStatus).render()),
+      h1(
+        "Fahrtenbuch",
+        OnlineStatusComponent(onlineStatus).render(),
+        ImportExportComponent().render()
+      ),
       table(
         cls := "table",
         thead(

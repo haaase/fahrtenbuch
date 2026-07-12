@@ -7,6 +7,7 @@ import org.getshaka.nativeconverter.ParseState
 import scala.scalajs.js
 import rdts.datatypes.LastWriterWins
 import rdts.base.Lattice
+import js.JSConverters._
 
 opaque type EntryId = Uid
 object EntryId:
@@ -51,6 +52,17 @@ object Entry:
         a.toString()
     override def fromNative(ps: ParseState): BigDecimal =
       BigDecimal(ps.json.asInstanceOf[String])
+  }
+
+  given NativeConverter[Seq[Entry]] with {
+    extension (a: Seq[Entry])
+      override def toNative: js.Any =
+        a.map(_.toNative).toJSArray
+    override def fromNative(ps: ParseState): Seq[Entry] =
+      ps.json
+        .asInstanceOf[js.Array[js.Any]]
+        .toSeq
+        .map(NativeConverter[Entry].fromNative)
   }
 
   def apply(
