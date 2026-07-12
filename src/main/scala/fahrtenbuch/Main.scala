@@ -27,7 +27,6 @@ object Main {
   val entryDbObserver =
     Observer[Entry](onNext = DexieDB.upsertEntry(_))
   entryEditBus.stream.tapEach(_ => println("lalilu"))
-  println("test")
 
   val allEntriesVar = Var(Set.empty[Entry])
 
