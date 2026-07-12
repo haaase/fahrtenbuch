@@ -10,11 +10,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js
 
 class ImportExportComponent():
+  private val canShare: Boolean = {
+    val nav = js.Dynamic.global.navigator
+    if (js.isUndefined(nav.share) || js.isUndefined(nav.canShare)) false
+    else {
+      val testFile = js.Dynamic.newInstance(js.Dynamic.global.File)(
+        js.Array(""),
+        "test.json",
+        js.Dynamic.literal(`type` = "application/json")
+      )
+      nav
+        .canShare(js.Dynamic.literal(files = js.Array(testFile)))
+        .asInstanceOf[Boolean]
+    }
+  }
+
   def render(): HtmlElement = {
     div(
       cls := "import-export",
       div(
         cls := "file",
+        styleAttr := (if canShare then "display:none" else ""),
         onClick --> { _ =>
           DexieDB.dumpDB().onComplete {
             case scala.util.Success(result) =>
@@ -49,6 +65,53 @@ class ImportExportComponent():
             span(
               cls := "file-label",
               "Daten exportieren"
+            )
+          )
+        )
+      ),
+      div(
+        cls := "file",
+        styleAttr := (if canShare then "" else "display:none"),
+        onClick --> { _ =>
+          DexieDB.dumpDB().onComplete {
+            case scala.util.Success(result) =>
+              val timestamp = new Date(Date.now()).toISOString()
+              val filename =
+                s"fahrtenbuch-export-${dom.window.location.hash}-$timestamp.json"
+              val blob = new Blob(
+                js.Array(result),
+                new BlobPropertyBag { `type` = "application/json" }
+              )
+              val file = js.Dynamic.newInstance(js.Dynamic.global.File)(
+                js.Array(blob),
+                filename,
+                js.Dynamic.literal(`type` = "application/json")
+              )
+              val navigator = js.Dynamic.global.navigator
+              if (!js.isUndefined(navigator.share)) {
+                navigator
+                  .share(
+                    js.Dynamic.literal(
+                      files = js.Array(file),
+                      title = "Fahrtenbuch Export"
+                    )
+                  )
+              }
+            case scala.util.Failure(exception) =>
+              println(s"Failed to share database: $exception")
+          }
+        },
+        label(
+          cls := "file-label",
+          span(
+            cls := "file-cta",
+            span(
+              cls := "file-icon",
+              i(cls := "mdi mdi-share-variant")
+            ),
+            span(
+              cls := "file-label",
+              "Daten teilen"
             )
           )
         )
