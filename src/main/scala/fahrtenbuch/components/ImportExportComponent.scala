@@ -32,7 +32,8 @@ class ImportExportComponent():
       cls := "import-export",
       div(
         cls := "file",
-        styleAttr := (if canShare then "" else "display:none"),
+        // styleAttr := (if canShare then "" else "display:none"),
+        styleAttr := "display:none",
         onClick --> { _ =>
           DexieDB.dumpDB().onComplete {
             case scala.util.Success(result) =>
