@@ -18,7 +18,10 @@ class EntryComponent(
       val dateInput =
         input(
           cls := "input",
-          value := new Date(entry.date.payload).toDateString()
+          `type` := "date",
+          value := new Date(entry.date.payload)
+            .toISOString()
+            .substring(0, 10)
         )
 
       val driverInput = input(cls := "input", value := entry.driver.payload)
