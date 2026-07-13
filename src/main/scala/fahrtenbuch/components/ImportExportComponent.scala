@@ -164,6 +164,29 @@ class ImportExportComponent():
             )
           )
         )
+      ),
+      div(
+        cls := "file",
+        onClick --> { _ =>
+          dom.window.location.hash = ""
+          DexieDB.deleteRoomId().onComplete { _ =>
+            dom.window.location.reload()
+          }
+        },
+        label(
+          cls := "file-label",
+          span(
+            cls := "file-cta",
+            span(
+              cls := "file-icon",
+              i(cls := "mdi mdi-logout")
+            ),
+            span(
+              cls := "file-label",
+              "Raum wechseln"
+            )
+          )
+        )
       )
     )
   }

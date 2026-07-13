@@ -115,4 +115,10 @@ object DexieDB {
       .put(js.Dynamic.literal(key = "roomId", value = id))
       .toFuture
       .map(_ => ())
+
+  def deleteRoomId(): Future[Unit] =
+    settingsTable
+      .delete("roomId")
+      .toFuture
+      .map(_ => ())
 }
