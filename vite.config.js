@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [
     scalaJSPlugin(),
     VitePWA({
+      injectRegister: "script",
       registerType: "autoUpdate",
       includeAssets: [
         "favicon.ico",
