@@ -10,15 +10,25 @@ import scala.util.Success
 
 import model.Entry
 import components.AppComponent
+import fahrtenbuch.components.RoomIDComponent
 
 @main
 def Fahrtenbuch(): Unit =
-  val appComponent = AppComponent(Main.allEntries, Trystero.onlineStatus)
+  lazy val appComponent = AppComponent(Main.allEntries, Trystero.onlineStatus)
 
-  renderOnDomContentLoaded(
-    dom.document.getElementById("app"),
-    appComponent.render()
-  )
+  if dom.window.location.hash.isEmpty then {
+    println("no room id specified")
+    lazy val roomIDComponent = RoomIDComponent()
+    renderOnDomContentLoaded(
+      dom.document.getElementById("app"),
+      roomIDComponent.render()
+    )
+  } else {
+    renderOnDomContentLoaded(
+      dom.document.getElementById("app"),
+      appComponent.render()
+    )
+  }
 
 object Main {
 
