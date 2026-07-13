@@ -57,7 +57,7 @@ class ImportExportComponent():
                       title = "Fahrtenbuch Export"
                     )
                   )
-              }
+              } else shareError.set(Some("Share not supported"))
             case scala.util.Failure(exception) =>
               shareError.set(Some(exception.getMessage))
           }
