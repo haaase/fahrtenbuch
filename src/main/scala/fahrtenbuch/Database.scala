@@ -35,12 +35,25 @@ object DexieDB {
       )
     )
 
+//  println("starting db")
+//
+//  dexieDB.on_ready(ready, (db: Dexie) => println("db: dexie is ready"))
+//  dexieDB.open()
+//
+//  def open(): Future[Dexie] = {
+//    dexieDB.open().toFuture
+//  }
+
   private val entriesTable: Table[js.Any, String, js.Any] =
     dexieDB.table("entries")
   private val settingsTable: Table[js.Any, String, js.Any] =
     dexieDB.table("settings")
   val entriesObservable: Observable[Future[Seq[Entry]]] =
     liveQuery(() => getAllEntries())
+
+//  def onReady(f: Dexie => Unit) = {
+//    dexieDB.on_ready(_, f)
+//  }
 
   def getEntry(id: EntryId): Future[Option[Entry]] =
     entriesTable

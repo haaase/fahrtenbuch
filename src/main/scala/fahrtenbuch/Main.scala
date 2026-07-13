@@ -30,16 +30,17 @@ def Fahrtenbuch(): Unit =
       case Success(Some(storedId)) =>
         dom.window.location.hash = storedId
         dom.window.location.reload()
-      case _ =>
-        println("no room id stored")
+      case Success(None) =>
+        println(s"no room id stored")
         render(
           dom.document.getElementById("app"),
           roomIDComponent.render()
         )
+      case Failure(e) =>
+        println(s"unknown error: $e")
     }
 
 object Main {
-
   // track changes to entries
   val entryEditBus = new EventBus[Entry]
   val entryDbObserver =
