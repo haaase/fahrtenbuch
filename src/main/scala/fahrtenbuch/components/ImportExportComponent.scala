@@ -25,6 +25,8 @@ class ImportExportComponent():
     }
   }
 
+  private val shareError = Var(Option.empty[String])
+
   def render(): HtmlElement = {
     div(
       cls := "import-export",
@@ -57,7 +59,7 @@ class ImportExportComponent():
                   )
               }
             case scala.util.Failure(exception) =>
-              println(s"Failed to share database: $exception")
+              shareError.set(Some(exception.getMessage))
           }
         },
         label(
@@ -73,6 +75,13 @@ class ImportExportComponent():
               "Daten teilen"
             )
           )
+        )
+      ),
+      p(
+        cls := "help is-danger",
+        child.text <-- shareError.signal.map(_.getOrElse("")),
+        display <-- shareError.signal.map(e =>
+          if e.isDefined then "" else "none"
         )
       ),
       div(
