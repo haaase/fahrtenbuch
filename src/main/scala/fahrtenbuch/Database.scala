@@ -19,19 +19,26 @@ import scala.util.Success
 
 object DexieDB {
 
-  private val schemaVersion = 1.3
-
   private val dexieDB: Dexie = new Dexie.^("fahrtenbuch")
   dexieDB
-    .version(schemaVersion)
+    .version(1.3)
     .stores(
       StringDictionary(
         ("entries", "id")
       )
     )
+  dexieDB
+    .version(2)
+    .stores(
+      StringDictionary(
+        ("settings", "key")
+      )
+    )
 
   private val entriesTable: Table[js.Any, String, js.Any] =
     dexieDB.table("entries")
+  private val settingsTable: Table[js.Any, String, js.Any] =
+    dexieDB.table("settings")
   val entriesObservable: Observable[Future[Seq[Entry]]] =
     liveQuery(() => getAllEntries())
 
@@ -81,4 +88,18 @@ object DexieDB {
   def loadDB(dump: String): Future[Unit] = {
     Future(NativeConverter[Seq[Entry]].fromJson(dump).map(upsertEntry))
   }
+
+  def getRoomId(): Future[Option[String]] =
+    settingsTable
+      .get("roomId")
+      .toFuture
+      .map(
+        _.toOption.map(_.asInstanceOf[js.Dynamic].value.asInstanceOf[String])
+      )
+
+  def setRoomId(id: String): Future[Unit] =
+    settingsTable
+      .put(js.Dynamic.literal(key = "roomId", value = id))
+      .toFuture
+      .map(_ => ())
 }

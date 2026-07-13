@@ -14,21 +14,29 @@ import fahrtenbuch.components.RoomIDComponent
 
 @main
 def Fahrtenbuch(): Unit =
-  lazy val appComponent = AppComponent(Main.allEntries, Trystero.onlineStatus)
+  val hash = dom.window.location.hash
 
-  if dom.window.location.hash.isEmpty then {
-    println("no room id specified")
-    lazy val roomIDComponent = RoomIDComponent()
-    renderOnDomContentLoaded(
-      dom.document.getElementById("app"),
-      roomIDComponent.render()
-    )
-  } else {
+  lazy val appComponent = AppComponent(Main.allEntries, Trystero.onlineStatus)
+  lazy val roomIDComponent = RoomIDComponent()
+
+  if hash.nonEmpty then
+    DexieDB.setRoomId(hash.stripPrefix("#"))
     renderOnDomContentLoaded(
       dom.document.getElementById("app"),
       appComponent.render()
     )
-  }
+  else
+    DexieDB.getRoomId().onComplete {
+      case Success(Some(storedId)) =>
+        dom.window.location.hash = storedId
+        dom.window.location.reload()
+      case _ =>
+        println("no room id stored")
+        render(
+          dom.document.getElementById("app"),
+          roomIDComponent.render()
+        )
+    }
 
 object Main {
 

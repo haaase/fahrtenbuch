@@ -1,6 +1,7 @@
 package fahrtenbuch.components
 import com.raquo.laminar.api.L.*
 import com.raquo.laminar.api.features.unitArrows
+import fahrtenbuch.DexieDB
 import org.scalajs.dom
 
 class RoomIDComponent():
@@ -14,6 +15,7 @@ class RoomIDComponent():
 
   def setRoomID(): Unit =
     val id = roomIDInput.ref.value
+    DexieDB.setRoomId(id)
     dom.window.location.hash = id
     dom.window.location.reload()
 
